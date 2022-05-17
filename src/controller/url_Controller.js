@@ -7,13 +7,13 @@ const shortUrl=async function(req,res){
     try{
     let {longUrl}=req.body
     if (!validUrl.isUri(longUrl)) {
-        return res.status(401).json('Invalid base URL')
+        return res.status(401).send('Invalid base URL')
     }
     const urlCode = shortid.generate(longUrl)
     const shortUrl = baseUrl + '/' + urlCode
     const newUrl={longUrl,shortUrl,urlCode}
     const short=await urlModel.create(newUrl)
-    return res.status(201).send({status:true,data:short})
+    return res.status(201).send({status:true,data:short})   
 }
     catch (error){
         return res.status(500).send({message:error.message})
