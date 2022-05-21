@@ -1,7 +1,7 @@
 const validUrl = require('valid-url')
 const urlModel = require("../model/url_Model");
 const shortId = require("shortid");
-//const { response } = require("express");
+const { response } = require("express");
 
 const redis = require("redis");
 
@@ -9,11 +9,11 @@ const { promisify } = require("util");
 
 //Connect to redis
 const redisClient = redis.createClient(
-    15322,
-    "redis-15322.c212.ap-south-1-1.ec2.cloud.redislabs.com",
+    14442,
+    "redis-14442.c212.ap-south-1-1.ec2.cloud.redislabs.com",
     { no_ready_check: true }
 );
-redisClient.auth("VhiAv8upFayKFvKqjX25mRgt2DiHEHzK", function (err) {
+redisClient.auth("2RS3A6ywtLcNSt8Gr92W8dTkWWqUjDyH", function (err) {
     if (err) throw err;
 });
 
@@ -23,6 +23,7 @@ redisClient.on("connect", async function () {
 
 //1. connect to the server
 //2. use the commands :
+
 //Connection setup for redis
 
 const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
@@ -63,7 +64,13 @@ const shortenUrl = async function (req, res) {
             .select({ _id:0,createdAt: 0, updatedAt: 0, __v: 0 });
         if (isAlreadyReg) {
             await SET_ASYNC(`${longUrl}`, JSON.stringify(isAlreadyReg));
-            res.status(409).send({status: false, message: `URL data already generated`,data: isAlreadyReg,});
+            res
+                .status(409)
+                .send({
+                    status: false,
+                    message: `URL data already generated`,
+                    data: isAlreadyReg,
+                });
         } else {
             const urlCode = shortId.generate(longUrl);
             let checkUrlCode = await urlModel.findOne({ urlCode: urlCode });
